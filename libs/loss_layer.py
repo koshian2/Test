@@ -1,10 +1,11 @@
 from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
+from libs.vgg16 import convert_to_caffe_colorscale
 
 class LossLayer(Layer):
     """
     損失関数の値を計算するレイヤー
-    Input：復元カラー画像、真のカラー画像、VGGの特徴量
+    Input：復元カラー画像（TF）、真のカラー画像（TF）、VGGの特徴量（Caffe）
     Output：予測画像＋損失値の合成
     """
 
