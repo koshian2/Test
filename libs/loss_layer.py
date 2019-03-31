@@ -24,9 +24,10 @@ class LossLayer(Layer):
         # 各損失関数
         content = content_loss(y_true, y_pred)
         style = style_loss(vgg_true, vgg_pred)
+        tv = total_variation_loss(y_true, y_pred)
 
         # 全体の損失関数
-        total_loss = content + 10*style
+        total_loss = content + 10*style + 0.01*tv
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
@@ -50,7 +51,12 @@ def style_loss(vgg_true, vgg_pred):
     loss = 0
     for p, t in zip(vgg_pred, vgg_true):
         loss += l1(gram_matrix(p), gram_matrix(t))
-        #loss += l1(p, t)
+    return loss
+
+def total_variation_loss(y_true, y_pred):
+    loss = 0
+    loss += l1(y_pred[:,:,1:,:], y_pred[:,:,:-1,:])
+    loss += l1(y_pred[:,1:,:,:], y_pred[:,:-1,:,:])
     return loss
     
 def l1(y_true, y_pred):
