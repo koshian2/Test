@@ -26,7 +26,7 @@ class LossLayer(Layer):
         style = style_loss(vgg_true, vgg_pred)
 
         # 全体の損失関数
-        total_loss = content + 10*style
+        total_loss = 10*content + style
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
