@@ -1,6 +1,5 @@
 from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
-from libs.vgg16 import convert_to_caffe_colorscale
 
 class LossLayer(Layer):
     """
