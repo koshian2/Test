@@ -50,7 +50,8 @@ def content_loss(y_true, y_pred):
 def perceptual_loss(vgg_true, vgg_pred):
     loss = 0
     for p, t in zip(vgg_pred, vgg_true):
-        loss += l1(p, t)
+        #loss += l1(p, t)
+        loss += l1(gram_matrix(p), gram_matrix(t))
     return loss
 
 def total_variation_loss(y_true, y_pred):
