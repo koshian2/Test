@@ -23,7 +23,7 @@ class LossLayer(Layer):
  
         # 各損失関数
         content = content_loss(y_true, y_pred)
-        style = style_los(vgg_true, vgg_pred)
+        style = style_loss(vgg_true, vgg_pred)
         tv = total_variation_loss(y_true, y_pred)
 
         # 全体の損失関数
