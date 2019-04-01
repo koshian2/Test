@@ -23,11 +23,11 @@ class LossLayer(Layer):
  
         # 各損失関数
         content = content_loss(y_true, y_pred)
-        style = style_loss(vgg_true, vgg_pred)
+        perp = perceptual_loss(vgg_true, vgg_pred)
         tv = total_variation_loss(y_true, y_pred)
 
         # 全体の損失関数
-        total_loss = content + 10*style + 0.01*tv
+        total_loss = content + 10*perp + 0.1*tv
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
@@ -47,10 +47,10 @@ def content_loss(y_true, y_pred):
     # content loss
     return l1(y_true, y_pred)
 
-def style_loss(vgg_true, vgg_pred):
+def perceptual_loss(vgg_true, vgg_pred):
     loss = 0
     for p, t in zip(vgg_pred, vgg_true):
-        loss += l1(gram_matrix(p), gram_matrix(t))
+        loss += l1(p, t)
     return loss
 
 def total_variation_loss(y_true, y_pred):
