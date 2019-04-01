@@ -27,7 +27,7 @@ class LossLayer(Layer):
         tv = total_variation_loss(y_true, y_pred)
 
         # 全体の損失関数
-        total_loss = content + style + 0.1*tv
+        total_loss = 5*content + style + 0.1*tv
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
