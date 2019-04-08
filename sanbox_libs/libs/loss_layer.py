@@ -31,8 +31,8 @@ class LossLayer(Layer):
         l6 = loss_tv(mask, y_comp)
 
         # 全体の損失関数
-        total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
-        #total_loss = l1 + 6*l2 + 0.05*l3 + 1.2*(l4+l5) + 0.1*l6
+        #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
+        total_loss = l1 + 6*l2 + 0.05*l3 + 1*(l4+l5) + 0.1*l6
         #total_loss = l1 + 6*l2
 
         # (batch,H,W,1)のテンソルを作る
