@@ -16,10 +16,6 @@ class LossLayer(Layer):
 
     def call(self, inputs):
         mask, y_pred, y_true, y_comp, vgg_pred_1, vgg_pred_2, vgg_pred_3, vgg_true_1, vgg_true_2, vgg_true_3, vgg_comp_1, vgg_comp_2, vgg_comp_3 = inputs
-        print(mask, y_pred, y_true, y_comp)
-        print(vgg_pred_1, vgg_pred_2, vgg_pred_3)
-        print(vgg_true_1, vgg_true_2, vgg_true_3)
-        print(vgg_comp_1, vgg_comp_2, vgg_comp_3)
 
         # 特徴量（ネストしたテンソルを渡せないのでこうする）
         vgg_out = [vgg_pred_1, vgg_pred_2, vgg_pred_3]
@@ -35,9 +31,7 @@ class LossLayer(Layer):
         l6 = loss_tv(mask, y_comp)
 
         # 全体の損失関数
-        #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
-        #total_loss = l1 + 6*l2 + 0.05*l3 + 0.1*l6
-        total_loss = l1 + 6*l2
+        total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
