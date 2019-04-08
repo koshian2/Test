@@ -42,4 +42,4 @@ def preprocess_image(x):
 def deprocess_image(x):
     assert x.dtype == np.float32
     img = (x + 1.0) * 127.5
-    return np.clip(x, 0.0, 255.0).astype(np.uint8)
+    return np.clip(img, 0.0, 255.0).astype(np.uint8)
