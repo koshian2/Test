@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 import numpy as np
+from libs.vgg16 import deprocess_image
 
 def add_mask(ground_truth_batch, blurred_mask_batch):
     assert ground_truth_batch.ndim == 4 and blurred_mask_batch.ndim == 4
@@ -34,14 +35,3 @@ def tile_images(masked_image, unmasked_image, grand_truth, filepath, title):
         plot_subplot(3*i+3, y_gt[i])
     plt.suptitle(title)
     plt.savefig(filepath)
-
-# uint -> tfのスケールへの変換
-def preprocess_image(x):
-    assert x.dtype == np.uint8
-    return x.astype(np.float32) / 127.5 - 1.0
-
-# tfのスケール -> uintへの変換
-def deprocess_image(x):
-    assert x.dtype == np.float32
-    img = (x + 1.0) * 127.5
-    return np.clip(img, 0, 255).astype(np.uint8)
