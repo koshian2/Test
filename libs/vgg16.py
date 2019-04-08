@@ -126,15 +126,3 @@ def extract_vgg_features(input_tensor, input_shape, cnt):
         if i in [3, 6, 10]:
             result.append(x)
     return result
-
-# ニューラルネットワーク→元の画像に戻すための処理（前処理の逆変換）
-# VGG19がCaffeモードの前処理なのでちょっと複雑
-def deprocess_image(x):
-    img = x.copy()
-    # 平均を0にしているのを戻す
-    img[:, :, :, 0] += 103.939
-    img[:, :, :, 1] += 116.779
-    img[:, :, :, 2] += 123.68
-    # CaffeモードではBGRで定義しているので、BGR->RGBへの変換をする
-    img = img[:, :, :, ::-1]
-    return np.clip(img, 0, 255).astype('uint8')
