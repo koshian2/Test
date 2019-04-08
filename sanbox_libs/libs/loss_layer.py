@@ -32,7 +32,8 @@ class LossLayer(Layer):
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
-        total_loss = l1 + 6*l2 + 0.05*l3 + 1.2*(l4+l5) + 0.1*l6
+        #total_loss = l1 + 6*l2 + 0.05*l3 + 1.2*(l4+l5) + 0.1*l6
+        total_loss = l1 + 6*l2
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
