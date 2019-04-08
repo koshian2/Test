@@ -27,6 +27,7 @@ def tile_images(masked_image, unmasked_image, grand_truth, filepath, title):
         ax.axis("off")
 
     plt.subplots_adjust(hspace=0.02, wspace=0.02, top=0.95, bottom=0.02, left=0.02, right=0.98)
+    plt.figure(figsize=(8, 10))
     plt.clf()
     for i in range(3):
         plot_subplot(3*i+1, y_masked[i])
