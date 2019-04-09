@@ -65,7 +65,7 @@ def download_all(aapi_session, meta_data_path):
     trial_cnt = 0
     success_cnt = 0
 
-    for item in tqdm(meta):
+    for item in tqdm(meta[:10]):
         try:
             aapi_session.download(item["image_url"], path=dest_dir)
         except:
@@ -78,6 +78,5 @@ def download_all(aapi_session, meta_data_path):
         if trial_cnt >= 30:
             time.sleep(1)
             trial_cnt = 0
-            exit()
 
     print(success_cnt, "/", len(meta), "件のダウンロードが完了しました")
