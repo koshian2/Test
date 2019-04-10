@@ -31,7 +31,7 @@ class LossLayer(Layer):
         l5 = loss_style(vgg_comp, vgg_gt)
         l6 = loss_tv(mask, y_comp)
         #l7 = loss_hole_diff(mask, y_true, y_pred)
-        l7 = loss_hole_prewitt(mask, y_true, y_pred)
+        #l7 = loss_hole_prewitt(mask, y_true, y_pred)
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
