@@ -35,11 +35,11 @@ class LossLayer(Layer):
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
-        total_loss = 10*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
+        #total_loss = 10*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
         #total_loss = 10*l1 + 60*l2 + 0.05*l3 + 10*(l4+l5) + 1*l6
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6 + 20*l7
-        #total_loss = 10*l1 + 60*l2 + 0.005*l3 + 0.5*(l4+l5) + 0.1*l6
+        total_loss = 10*l1 + 60*l2 + 0.005*l3 + 0.5*(l4+l5) + 0.1*l6
         #total_loss = 10*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 0.1*l6 + 60*l7
         
         # (batch,H,W,1)のテンソルを作る
