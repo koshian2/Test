@@ -76,8 +76,8 @@ def loss_hole_prewitt(mask, y_true, y_pred):
                        [1, -8, 1],
                        [1, 1, 1]], np.float32)
     kernel = K.variable(kernel) * K.ones(shape=(1, 1, mask.shape[3], mask.shape[3]))
-    prewitt_true = K.conv2d(hole_true, kernel, padding="same")
-    prewitt_pred = K.conv2d(hole_pred, kernel, padding="same")
+    prewitt_true = K.conv2d(hole_true, kernel, padding="valid")
+    prewitt_pred = K.conv2d(hole_pred, kernel, padding="valid")
     return l1(prewitt_true, prewitt_pred)
 
 def loss_valid(mask, y_true, y_pred):
