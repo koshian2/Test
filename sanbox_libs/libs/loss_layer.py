@@ -1,6 +1,5 @@
 from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
-import numpy as np
 
 class LossLayer(Layer):
     """
@@ -31,7 +30,6 @@ class LossLayer(Layer):
         l5 = loss_style(vgg_comp, vgg_gt)
         l6 = loss_tv(mask, y_comp)
         #l7 = loss_hole_diff(mask, y_true, y_pred)
-        l7 = loss_hole_prewitt(mask, y_true, y_pred)
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
@@ -40,7 +38,7 @@ class LossLayer(Layer):
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6 + 20*l7
         #total_loss = 10*l1 + 60*l2 + 0.005*l3 + 0.5*(l4+l5) + 0.1*l6
-        total_loss = 5*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 0.1*l6 + 60*l7
+        total_loss = 5*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 0.1*l6
         
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
