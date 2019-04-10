@@ -1,5 +1,6 @@
 from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
+import numpy as np
 
 class LossLayer(Layer):
     """
@@ -30,14 +31,16 @@ class LossLayer(Layer):
         l5 = loss_style(vgg_comp, vgg_gt)
         l6 = loss_tv(mask, y_comp)
         #l7 = loss_hole_diff(mask, y_true, y_pred)
+        l7 = loss_hole_prewitt(mask, y_true, y_pred)
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6
-        total_loss = 10*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
+        #total_loss = 10*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
         #total_loss = 10*l1 + 60*l2 + 0.05*l3 + 10*(l4+l5) + 1*l6
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6
         #total_loss = 1*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 1*l6 + 20*l7
         #total_loss = 10*l1 + 60*l2 + 0.005*l3 + 0.5*(l4+l5) + 0.1*l6
+        total_loss = 5*l1 + 60*l2 + 0.05*l3 + 1*(l4+l5) + 0.1*l6 + 20*l7
         
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
@@ -65,7 +68,18 @@ def loss_hole_diff(mask, y_true, y_pred):
     b = l1(hole_true[:,:,1:,:]-hole_true[:,:,:-1,:],
            hole_pred[:,:,1:,:]-hole_pred[:,:,:-1,:])
     return a+b
-    
+
+def loss_hole_prewitt(mask, y_true, y_pred):
+    hole_true = (1-mask) * y_true
+    hole_pred = (1-mask) * y_pred
+    kernel = np.array([[1, 1, 1,],
+                       [1, -8, 1],
+                       [1, 1, 1]], np.float32)
+    kernel = K.variable(kernel)
+    prewitt_true = K.conv2d(hole_true, kernel, padding="same")
+    prewitt_pred = K.conv2d(hole_pred, kernel, padding="same")
+    return l1(prewitt_true, prewitt_pred)
+
 def loss_valid(mask, y_true, y_pred):
     """Pixel L1 loss outside the hole / mask"""
     return l1(mask * y_true, mask * y_pred)
