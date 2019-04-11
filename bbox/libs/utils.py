@@ -247,13 +247,12 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling")
         imgs, rels, abss = crop_by_expanded_bbox(img_json, 
                                                  excluded_grayscale_imgs=False) # 高速化のためカラーチェックは切る
         nazo_lights = []
-        for i, r in zip(imgs, rels):
-            hikari, _ = nazo_no_hikari(i, r)
+        for im, re in zip(imgs, rels):
+            hikari, _ = nazo_no_hikari(im, re)
             nazo_lights.append(hikari)
         masked_image = merge_to_original(img_json, nazo_lights, rels, abss) # 謎の光
 
         # 復元画像
-        print(data["mapper"][i]["index"])
         used_preds = [preds[k] for k in data["mapper"][i]["index"]]
         reconstruct_image = merge_to_original(img_json, used_preds,
                                               data["mapper"][i]["bbox_rel"],
