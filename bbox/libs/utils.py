@@ -269,7 +269,7 @@ def merge_to_original(img_json, cropped_img_arrays, orig_bbox_relative, orig_bbo
         img_array = np.asarray(original, np.uint8)
     return img_array
 
-def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling"):
+def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling", mode="hikari"):
     assert pred_crops.dtype == np.float32 and pred_crops.ndim == 4
     assert "mapper" in data.keys()
     # カラースケールを元に戻す
@@ -283,19 +283,22 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling")
         ax.imshow(image)
         ax.axis("off")
 
-    for i in range(30):
+    for i in range(50):
         img_json = data["mapper"][i]["json"]
         # オリジナル画像
         with Image.open(img_json["filepath"]) as img:
             original = np.asarray(img, np.uint8)
-        # 謎の光の画像
+        # 謎の光orモザイク画像
         imgs, rels, abss = crop_by_expanded_bbox(img_json, 
                                                  excluded_grayscale_imgs=False) # 高速化のためカラーチェックは切る
-        nazo_lights = []
+        censored_images = []
         for im, re in zip(imgs, rels):
-            hikari, _ = nazo_no_hikari(im, re)
-            nazo_lights.append(hikari)
-        masked_image = merge_to_original(img_json, nazo_lights, rels, abss) # 謎の光
+            if mode == "hikari":
+                censor, _ = nazo_no_hikari(im, re)
+            elif mode == "mosaic":
+                censor, _ = add_mosaic(im, re)
+            censored_images.append(censor)
+        masked_image = merge_to_original(img_json, censored_images, rels, abss) # 謎の光orモザイク
 
         # 復元画像
         used_preds = [preds[k] for k in data["mapper"][i]["index"]]
@@ -306,7 +309,7 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling")
         if ind == 0:
             plt.clf()
             plt.subplots_adjust(hspace=0.02, wspace=0.02, top=0.95, bottom=0.02, left=0.02, right=0.98)
-            plt.figure(figsize=(10, 10))
+            plt.figure(figsize=(8, 8))
 
         plot_subplot(ind*3+1, masked_image)
         plot_subplot(ind*3+2, reconstruct_image)
@@ -387,18 +390,24 @@ def create_dataset(mode="hikari"):
     # 有効画像数のカウント
     valid_images = count_valid_images()
     print("有効画像数", len(valid_images)) # 開発環境では3973件
-    train_json, test_json = train_test_split(valid_images, test_size=0.03, random_state=114514)
 
     # 訓練データの作成
     print("mode =", mode, "でデータを作成")
     print("訓練データの作成中")
-    train_data = create_dataset_by_json(train_json, mode=mode)
-    # テストデータの作成
-    print("テストデータの作成中")
-    test_data = create_dataset_by_json(test_json, mode=mode)
+    train_data = create_dataset_by_json(valid_images, mode=mode)
 
+    # ToDO:もっとデータを増やす
+    # データが少なすぎるので過学習がひどい
+    # そのため、train_test_splitで分けるのではなく、
+    # 訓練データの一部をサンプリング用に分割する（汎化性能は今後の課題）
+    indices = np.random.seed(114514)
+    sampling_indices = np.random.permutation(len(valid_images))[:200]
+
+    # サンプリング用を作成
+    sampling_data = create_dataset_by_json([valid_images[x] for x in sampling_indices],
+                                           mode=mode)
     # 全体の保存
-    result = {"train": train_data, "test": test_data}
+    result = {"train": train_data, "sampling": sampling_data}
     joblib.dump(result, "oppai_dataset.job.gz", compress=3)
 
 def preprocess_image(x):
