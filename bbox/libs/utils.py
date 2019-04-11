@@ -198,6 +198,51 @@ def nazo_no_hikari(cropped_img_array, rel_bbox, blur_size=10):
 
     return merge, reversed_mask
     
+def add_mosaic(cropped_img_array, rel_bbox, blur_size=10):
+    """
+    出力：モザイクを画像、アルファブレンディングの白黒マスク（マスク部分は黒に変更）
+    """
+    assert cropped_img_array.ndim == 3 and cropped_img_array.dtype == np.uint8
+    assert len(rel_bbox) == 4
+    # マスク画像を作る    
+    with Image.new("L", (cropped_img_array.shape[1], cropped_img_array.shape[0])) as mask:
+        draw = ImageDraw.Draw(mask)
+        mask_width = rel_bbox[2] - rel_bbox[0]
+        mask_height = rel_bbox[3] - rel_bbox[1]
+
+        draw.rectangle((rel_bbox[0]+mask_width*0.1, rel_bbox[1]+mask_width*0.1, 
+                        rel_bbox[0]+mask_width*0.9, rel_bbox[1]+mask_height*0.9),
+                       fill=(255))
+        mask = mask.filter(ImageFilter.GaussianBlur(blur_size))
+        mask_array = np.expand_dims(np.asarray(mask, np.uint8), -1) * np.ones((1,1,3), np.uint8)
+
+        # 元画像、モザイク画像
+        with Image.fromarray(cropped_img_array) as original:
+            mosaic = original.filter(ImageFilter.GaussianBlur(5))
+            mosaic = mosaic.resize([x // 8 for x in mosaic.size]).resize(mosaic.size)
+            merge = Image.composite(mosaic, original, mask)
+            merge_array = np.asarray(merge, np.uint8)
+
+    # 前処理でハマるので、マスク部分を黒に変える
+    reversed_mask = (255 - mask_array).astype(np.uint8)
+
+    return merge_array, reversed_mask
+
+# 有効な画像数をカウント
+def mosaic_test():
+    with open("oppai_dataset/oppai_meta.json", "r") as fp:
+       metadata = json.load(fp)
+    for pic in tqdm(metadata):
+        imgs, rels, abss = crop_by_expanded_bbox(pic)
+        if len(imgs) == 0: continue
+        nazos = []
+        for img, rel in zip(imgs, rels):
+            hikari, mask = add_mosaic(img, rel)
+            nazos.append(hikari)
+        merge = merge_to_original(pic, nazos, rels, abss)
+        plt.imshow(merge)
+        plt.show()
+
 # クロップした画像を1つに束ねる
 def merge_to_original(img_json, cropped_img_arrays, orig_bbox_relative, orig_bbox_absolute):
     """
@@ -284,7 +329,7 @@ def count_valid_images():
         valid.append(pic)
     return valid
 
-def create_dataset_by_json(json_paths):
+def create_dataset_by_json(json_paths, mode="hikari"):
     """
     出力：マスク済み画像[masked_image]、マスク[mask]、真の画像[ground_trth]、マッパー[mapper]
     マッパー＝[index]:全体リストのインデックス、[json]:元のJSON
@@ -302,7 +347,10 @@ def create_dataset_by_json(json_paths):
         # クロップ
         img, rel, abs = crop_by_expanded_bbox(pic)
         for i, r in zip(img, rel):
-            masked_item, mask_item = nazo_no_hikari(i, r)
+            if mode == "hikari":
+                masked_item, mask_item = nazo_no_hikari(i, r)
+            elif mode == "mosaic":
+                masked_item, mask_item = add_mosaic(i, r)
             # 画像側に追加
             masked_images.append(masked_item)
             masks.append(mask_item)
@@ -326,7 +374,7 @@ def create_dataset_by_json(json_paths):
 
 
 # データセットの作成
-def create_dataset():
+def create_dataset(mode="hikari"):
     # 記録するもの
 
     # 訓練テストの分割：ファイル単位
@@ -342,11 +390,12 @@ def create_dataset():
     train_json, test_json = train_test_split(valid_images, test_size=0.03, random_state=114514)
 
     # 訓練データの作成
+    print("mode =", mode, "でデータを作成")
     print("訓練データの作成中")
-    train_data = create_dataset_by_json(train_json)
+    train_data = create_dataset_by_json(train_json, mode=mode)
     # テストデータの作成
     print("テストデータの作成中")
-    test_data = create_dataset_by_json(test_json)
+    test_data = create_dataset_by_json(test_json, mode=mode)
 
     # 全体の保存
     result = {"train": train_data, "test": test_data}
@@ -363,4 +412,4 @@ def deprocess_image(x):
 
 if __name__ == "__main__":
     # 必要なもの：マスク済み、マスクフラグ、真の画像
-    create_dataset()
+    mosaic_test()
