@@ -309,7 +309,7 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling",
         if ind == 0:
             plt.clf()
             plt.subplots_adjust(hspace=0.02, wspace=0.02, top=0.95, bottom=0.02, left=0.02, right=0.98)
-            plt.figure(figsize=(8, 8))
+            plt.figure(figsize=(10, 10))
 
         plot_subplot(ind*3+1, masked_image)
         plot_subplot(ind*3+2, reconstruct_image)
@@ -317,8 +317,8 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling",
 
         if ind == 2:
             pic_num = i // 3
-            plt.suptitle(base_title+f" (epoch={epoch:03} {pic_num+1}/10)")
-            plt.savefig(directory+f"/epoch_{epoch:03}_{pic_num}.png")
+            plt.suptitle(base_title+f" (epoch={epoch:03} {pic_num+1}/50)")
+            plt.savefig(directory+f"/epoch_{epoch:03}_{pic_num:02}.png")
 
 # 有効な画像数をカウント
 def count_valid_images():
