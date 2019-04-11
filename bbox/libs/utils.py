@@ -279,7 +279,7 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling",
         os.mkdir(directory)
 
     def plot_subplot(index, image):
-        ax = plt.subplot(3, 3, index)
+        ax = plt.subplot(2, 2, index)
         ax.imshow(image)
         ax.axis("off")
 
@@ -305,20 +305,16 @@ def save_tiled_images(data, pred_crops, epoch, base_title, directory="sampling",
         reconstruct_image = merge_to_original(img_json, used_preds,
                                               data["mapper"][i]["bbox_rel"],
                                               data["mapper"][i]["bbox_abs"])
-        ind = i % 3
-        if ind == 0:
-            plt.clf()
-            plt.subplots_adjust(hspace=0.02, wspace=0.02, top=0.95, bottom=0.02, left=0.02, right=0.98)
-            plt.figure(figsize=(10, 10))
+        plt.clf()
+        plt.subplots_adjust(hspace=0.02, wspace=0.02, top=0.95, bottom=0.02, left=0.02, right=0.98)
+        plt.figure(figsize=(10, 10))
 
-        plot_subplot(ind*3+1, masked_image)
-        plot_subplot(ind*3+2, reconstruct_image)
-        plot_subplot(ind*3+3, original)
+        plot_subplot(1, masked_image)
+        plot_subplot(2, reconstruct_image)
+        plot_subplot(3, original)
 
-        if ind == 2:
-            pic_num = i // 3
-            plt.suptitle(base_title+f" (epoch={epoch:03} {pic_num+1}/50)")
-            plt.savefig(directory+f"/epoch_{epoch:03}_{pic_num:02}.png")
+        plt.suptitle(base_title+f" (epoch={epoch:03} {i+1}/50)")
+        plt.savefig(directory+f"/epoch_{epoch:03}_{i:02}.png")
 
 # 有効な画像数をカウント
 def count_valid_images():
