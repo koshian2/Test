@@ -83,8 +83,8 @@ def prewitt_operation(image):
     grayscale_kernel = K.variable(grayscale_kernel)
 
     gray_img = K.sum(grayscale_kernel * image, axis=-1, keepdims=True)
-    conv_x = K.conv2d(gray_img, kernel_x, data_format="channels_last", padding="valid")
-    conv_y = K.conv2d(gray_img, kernel_y, data_format="channels_last", padding="valid")
+    conv_x = K.conv2d(gray_img, kernel_x, data_format="channels_last", padding="same")
+    conv_y = K.conv2d(gray_img, kernel_y, data_format="channels_last", padding="same")
     conv = K.sqrt(conv_x**2 + conv_y**2)
     return conv
 
