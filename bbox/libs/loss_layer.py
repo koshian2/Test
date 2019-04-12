@@ -71,7 +71,7 @@ def prewitt_operation(image):
     prewitt_x = np.array([[1,0,-1],
                           [1,0,-1],
                           [1,0,-1]], np.float32).reshape(3,3,1,1)
-    prewitt_x = np.array([[1,1,1],
+    prewitt_y = np.array([[1,1,1],
                           [0,0,0],
                           [-1,-1,-1]], np.float32).reshape(3,3,1,1)
     ones = K.ones(shape=(3, 3, image.shape[3], 1))
