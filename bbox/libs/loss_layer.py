@@ -76,8 +76,8 @@ def prewitt_operation(image):
                           [-1,-1,-1]], np.float32).reshape(3,3,1,1)
     ones = K.ones(shape=(3, 3, image.shape[3], 1))
 
-    kernel_x = K.variable(prewitt_x) * K.ones(ones)
-    kernel_y = K.variable(prewitt_y) * K.ones(ones)
+    kernel_x = K.variable(prewitt_x) * ones
+    kernel_y = K.variable(prewitt_y) * ones
 
     grayscale_kernel = np.array([0.2126, 0.7152, 0.0722], np.float32).reshape(1,1,1,3)
     grayscale_kernel = K.variable(grayscale_kernel)
