@@ -74,7 +74,7 @@ def prewitt_operation(image):
     prewitt_y = np.array([[1,1,1],
                           [0,0,0],
                           [-1,-1,-1]], np.float32).reshape(3,3,1,1)
-    ones = K.ones(shape=(3, 3, image.shape[3], 1))
+    ones = K.ones(shape=(3, 3, 1, image.shape[3]))
 
     kernel_x = K.variable(prewitt_x) * ones
     kernel_y = K.variable(prewitt_y) * ones
