@@ -30,11 +30,13 @@ class LossLayer(Layer):
         l4 = loss_style(vgg_out, vgg_gt)
         l5 = loss_style(vgg_comp, vgg_gt)
         l6 = loss_tv(mask, y_comp)
+        l7 = loss_prewitt(mask, y_true, y_pred)
 
         # 全体の損失関数
         #total_loss = l1 + 6*l2 + 0.05*l3 + 120*(l4+l5) + 0.1*l6 # 論文通りの損失関数
         # VGGの特徴量のカラースケールが違うので比重を変える
-        total_loss = 10*l1 + 60*l2 + 0.005*l3 + 0.5*(l4+l5) + 0.1*l6
+        #total_loss = 10*l1 + 60*l2 + 0.005*l3 + 1*(l4+l5) + 0.1*l6
+        total_loss = 10*l1 + 60*l2 + 0.005*l3 + 1*(l4+l5) + 0.1*l6 + 10*l7
 
         # (batch,H,W,1)のテンソルを作る
         ones = K.sign(K.abs(y_pred) + 1) # (batch,H,W,3)のすべて1のテンソル
@@ -65,6 +67,34 @@ def loss_perceptual(vgg_out, vgg_gt, vgg_comp):
         loss += l1(o, g) + l1(c, g)
     return loss
         
+def prewitt_operation(image):
+    prewitt_x = np.array([[1,0,-1],
+                          [1,0,-1],
+                          [1,0,-1,], np.float32]).reshape(3,3,1,1)
+    prewitt_x = np.array([[1,1,1],
+                          [0,0,0],
+                          [-1,-1,-1,], np.float32]).reshape(3,3,1,1)
+    ones = K.ones(shape=(3, 3, mask.shape[3], mask.shape[3]))
+
+    kernel_x = K.variable(prewitt_x) * K.ones(ones)
+    kernel_y = K.variable(prewitt_y) * K.ones(ones)
+
+    grayscale_kernel = np.array([0.2126, 0.7152, 0.0722], np.float32).reshape(1,1,1,3)
+    grayscale_kernel = K.variable(grayscale_kernel)
+
+    gray_img = K.sum(grayscale_kernel * image, axis=-1, keepdims=True)
+    conv_x = K.conv2d(gray_img, kernel_x, data_format="channels_last", padding="valid")
+    conv_y = K.conv2d(gray_img, kernel_y, data_format="channels_last", padding="valid")
+    conv = K.sqrt(conv_x**2 + conv_y**2)
+    return conv
+
+def loss_prewitt(mask, y_true, y_pred):
+    prewitt_true = prewitt_operation(y_true)
+    prewitt_pred = prewitt_operation(y_pred)
+    
+    return l1((1-mask) * prewitt_true, (1-mask) * prewitt_pred)
+
+
 def loss_style(output, vgg_gt):
     """Style loss based on output/computation, used for both eq. 4 & 5 in paper"""
     loss = 0
