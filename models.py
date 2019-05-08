@@ -60,9 +60,14 @@ def create_normal_wide_resnet(N=4, k=10):
     """
     # input
     input = layers.Input((32,32,3))
-
+    # 16 channels block
+    x = layers.Conv2D(16, 3, padding="same")(input)
+    x = layers.BatchNormalization()(x)
+    x = layers.Activation("relu")(x)
     # 1st block
-    x = _create_normal_residual_block(input, 16*k, N)
+    x = _create_normal_residual_block(x, 16*k, N)
+    # The original wide resnet is stride=2 conv for downsampling,
+    # but replace them to average pooling because centers are shifted when octconv
     # 2nd block
     x = layers.AveragePooling2D(2)(x)
     x = _create_normal_residual_block(x, 32*k, N)
@@ -85,8 +90,15 @@ def create_octconv_wide_resnet(alpha, N=4, k=10):
     # downsampling for lower
     low = layers.AveragePooling2D(2)(input)
 
+    # 16 channels block
+    high, low = OctConv2D(filters=16, alpha=alpha)([input, low])
+    high = layers.BatchNormalization()(high)
+    high = layers.Activation("relu")(high)
+    low = layers.BatchNormalization()(low)
+    low = layers.Activation("relu")(low)
+
     # 1st block
-    high, low = _create_octconv_residual_block([input, low], 16*k, N, alpha)
+    high, low = _create_octconv_residual_block([high, low], 16*k, N, alpha)
     # 2nd block
     high = layers.AveragePooling2D(2)(high)
     low = layers.AveragePooling2D(2)(low)
