@@ -238,7 +238,7 @@ def merge_to_original(img_json, cropped_img_arrays, orig_bbox_relative, orig_bbo
     return img_array
 
 def compare_result_images(censored_images, predicted_images, ground_truth, mappers, file_path):
-    x = np.concatenate([censored_images, predicted_images, ground_truth], axis=-1)
+    x = np.concatenate([censored_images, predicted_images, ground_truth], axis=0)
     x = np.transpose(x, [0, 3, 1, 2])
     tx = torch.as_tensor(x)
     tx = torchvision.utils.make_grid(tx, nrow=3, padding=10, normalize=True, range=(-1.0, 1.0))
