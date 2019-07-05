@@ -252,7 +252,7 @@ def compare_result_images(censored_images, predicted_images, ground_truth, mappe
         cv2.putText(expand_img,
                     mappers[i]["json"]["original_url"].replace(
                         "https://www.pixiv.net/member_illust.php?mode=medium&", ""),
-                    (5+266*i, 266*3+90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255))
+                    (30+266*i, 266*3+90), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255))
     cv2.imwrite("sampling/"+file_path, expand_img)
 
 
