@@ -247,9 +247,10 @@ def compare_result_images(censored_images, predicted_images, ground_truth, mappe
     expand_img = np.zeros((img.shape[0]+100, img.shape[1], img.shape[2]), np.uint8)
     expand_img[50:(img.shape[0]+50), :, :] = img
     expand_img = expand_img[:, :, ::-1].copy() # これやらんとバグる
-    cv2.putText(expand_img, "Censored / Pred / Ground Truth", (100, 10), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (255,255,255))
+    cv2.putText(expand_img, "Censored / Pred / Ground Truth", (100, 40), cv2.FONT_HERSHEY_SIMPLEX, 1.2, (255,255,255))
     for i in range(3):
-        cv2.putText(expand_img, mappers[i]["json"]["original_url"], (10+266*i, 256*3+70), cv2.FONT_HERSHEY_SIMPLEX, 1, (255,255,255))
+        cv2.putText(expand_img.replace("https://www.pixiv.net/member.php?", ""), mappers[i]["json"]["original_url"],
+                    (5+266*i, 256*3+70), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255))
     cv2.imwrite("sampling/"+file_path, expand_img)
 
 
