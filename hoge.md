@@ -1,0 +1,4 @@
+# テスト
+あああ
+
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">技術書典8の新刊『モザイク除去から学ぶ　最先端のディープラーニング』通販<br>・Booth（物理、電子版）：<a href="https://t.co/6IAPOEEvM8">https://t.co/6IAPOEEvM8</a><br>・とらのあな（物理版：～3/31最大19%還元）：<a href="https://t.co/MnRfLvIDUd">https://t.co/MnRfLvIDUd</a><br>・〃電子版プレゼント：<a href="https://t.co/pom9f49jzg">https://t.co/pom9f49jzg</a><br>・情報まとめ・質問用：<a href="https://t.co/U7aYREgf4V">https://t.co/U7aYREgf4V</a></p>&mdash; 🔞こあん@モザイク除去(GAN)本好評通販中 (@koshian2) <a href="https://twitter.com/koshian2/status/1234361887053074432?ref_src=twsrc%5Etfw">March 2, 2020</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script> 
